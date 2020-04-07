@@ -138,8 +138,8 @@
 
 ; функциональная реализация
 (defun mult(digit list)
-    (mapcar 
-        (lambda (elem) 
+    (mapcar                    ; mapcar ко всем car-элементам последовательно применит 
+        (lambda (elem)         ; лямбда функцию, которая умножает car-элемент на число elem
             (* digit elem)
         ) list)
 )
@@ -150,9 +150,9 @@
     (mapcar 
         (lambda (elem)
             (cond 
-                ((listp elem) (super-mult digit elem))
-                ((numberp elem)  (* elem digit))
-                (t elem)
+                ((listp elem) (super-mult digit elem))  ; если элемент список - применим на нем функцию
+                ((numberp elem)  (* elem digit))        ; если элемент число - умножим его на заданный множитель
+                (t elem)                                ; во всех других случаях осталяем элемент без изменений
             )
         )
     )
@@ -161,8 +161,8 @@
 ; рекурсивная реализация 
 (defun mult (digit list)
     (cond 
-        ((null list) nil)
-        (t (cons (* (car list) digit) (mult digit (cdr list))))
+        ((null list) nil)                                        ; если список пустой - вернем nil 
+        (t (cons (* (car list) digit) (mult digit (cdr list))))  ; иначе рекурсивно умножаем каждый car элемент на множитель
     )
 )
 
@@ -174,3 +174,76 @@
         (  t                     (cons (car list) (super-mult digit (cdr list)))                    )
     )
 )
+
+; Напишите функцию, которая уменьшает на 10 все числа из списка
+; аргумента этой функции.
+
+; функционально вычитаем 10
+(defun minus10 (list)
+    (mapcar (lambda (x) (- x 10)) list)
+)
+
+; рекурсивно
+(defun minus10 (list)
+    (cond 
+        ( (null list) nil                                           ) ; если список пустой вернем nil 
+        ( t           (cons (- (car list) 10)  (minus10 (cdr list)))) ; иначе вычитаем из головы 10 и присоединяем к ней хвост,
+    )                                                                 ; к которому применяем фунцию minus10
+)
+
+; Написать функцию, которая возвращает первый аргумент списка -аргумента.
+; который сам является непустым списком.
+
+; рекурсивно
+(defun get-first (list)
+    (cond 
+        ( (null list)        nil                     )
+        ( (listp (car list)) (get-first (car list))  )
+        ( t                  (car list)              )
+    )
+)
+
+(get-first '(((((1)) 2) 3)))
+
+; Написать функцию, которая выбирает из заданного списка только те числа,
+; которые больше 1 и меньше 10. 
+
+; lb - left border левая граница 
+; rb - right border правая граница 
+; сразу с заданными границами
+(defun take-between (lb rb list)
+    (mapcan 
+        (lambda (x) 
+            (if (and (> x lb) (< x rb)) (list x) nil)
+        ) list
+    )
+)
+
+(defun take-between  (lb rb list) 
+    (cond
+        ( (null list)                                 nil                                             )
+        ( (and (> (car list) lb) (< (car list) rb))  (cons (car list) (take-between lb rb (cdr list))))
+        (  t                                         (take-between lb rb (cdr list))                  )
+    )
+)
+
+(take-between 1 10 '(0 1 7 4 5 10 9 8)) 
+
+; Написать функцию, вычисляющую декартово произведение двух своих списковаргументов. 
+; ( Напомним, что А х В это множество всевозможных пар (a b), где а
+; принадлежит А, принадлежит В.)
+
+; функционалом
+(defun decart (list1 list2)
+    (mapcan 
+        #'(lambda (x)
+            (mapcar 
+                #'(lambda (y)
+                    (list x y)
+                ) list2
+            ) 
+        ) list1
+    )
+)
+
+; рекурсией надо подумать 
