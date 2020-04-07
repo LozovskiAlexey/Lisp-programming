@@ -133,5 +133,44 @@
 
 ; Напишите функцию, которая умножает на заданное число-аргумент все числа
 ; из заданного списка-аргумента, когда
-; a) все элементы списка --- числа,
+; a) все элементы списка -- числа,
 ; 6) элементы списка -- любые объекты.
+
+; функциональная реализация
+(defun mult(digit list)
+    (mapcar 
+        (lambda (elem) 
+            (* digit elem)
+        ) list)
+)
+
+(mult 5 '(1 2 3 4 5))
+
+(defun super-mult (digit list)
+    (mapcar 
+        (lambda (elem)
+            (cond 
+                ((listp elem) (super-mult digit elem))
+                ((numberp elem)  (* elem digit))
+                (t elem)
+            )
+        )
+    )
+)
+
+; рекурсивная реализация 
+(defun mult (digit list)
+    (cond 
+        ((null list) nil)
+        (t (cons (* (car list) digit) (mult digit (cdr list))))
+    )
+)
+
+(defun super-mult (digit list)
+    (cond 
+        (  (null         list )   nil                                                               )   
+        (  (numberp (car list))  (cons (* (car list) digit) (super-mult digit (cdr list)))          )
+        (  (listp   (car list))  (cons (super-mult digit (car list)) (super-mult digit (cdr list))) )
+        (  t                     (cons (car list) (super-mult digit (cdr list)))                    )
+    )
+)
